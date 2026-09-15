@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Collection {
+  id        String   @id @default(cuid())
+  name      String
+  icon      String   @default("folder")
+  color     String   @default("#FFC700")
+  createdAt DateTime @default(now())
+  links     Link[]
+}
+
+model Link {
+  id           String     @id @default(cuid())
+  url          String
+  title        String?
+  domain       String?
+  createdAt    DateTime   @default(now())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+}
+
+model Trainer {
+  id          String           @id @default(cuid())
+  name        String
+  email       String
+  role        String
+  bio         String
+  photoUrl    String?
+  yearsExp    Int              @default(0)
+  yearsTeach  Int              @default(0)
+  coursesQty  Int              @default(0)
+  rankLabel   String           @default("#1")
+  twitter     String?
+  linkedin    String?
+  instagram   String?
+  createdAt   DateTime         @default(now())
+  experiences WorkExperience[]
+  reviews     Review[]
+}
+
+model WorkExperience {
+  id        String  @id @default(cuid())
+  title     String
+  company   String
+  startDate String
+  endDate   String
+  trainerId String
+  trainer   Trainer @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  author    String
+  role      String
+  rating    Float
+  comment   String
+  createdAt DateTime @default(now())
+  trainerId String
+  trainer   Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+}
